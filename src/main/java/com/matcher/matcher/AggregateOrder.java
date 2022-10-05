@@ -1,15 +1,24 @@
 package com.matcher.matcher;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "aggregateOrders")
+@NoArgsConstructor
+@Data
+@AllArgsConstructor
 public class AggregateOrder{
+    @Id
+    private Long id;
     private int price;
     private int quantity;
     private String action;
-
-    public AggregateOrder(int quantity, int price, String action) {
-        this.quantity = quantity;
-        this.price = price;
-        this.action = action;
-    }
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
@@ -24,7 +33,8 @@ public class AggregateOrder{
     public String getAction() {return action;}
 
     public String toString(){
-        String response = "Price: " + this.price
+        String response = "Order id: " + this.id
+                +" \nPrice: " + this.price
                 + "\nQuantity: " + this.quantity
                 + "\nAction: " + this.action;
         return response;

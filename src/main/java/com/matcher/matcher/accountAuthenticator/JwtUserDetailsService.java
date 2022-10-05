@@ -2,7 +2,6 @@ package com.matcher.matcher.accountAuthenticator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import com.matcher.matcher.accountDB.Account;
 import com.matcher.matcher.accountDB.AccountQueryService;
@@ -23,7 +22,6 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("hi from load by username");
         List<Account> accountList = accountQueryService.accountRepository.findAllByAccount(username);
         if (accountList.size() > 0) {
             return new User(username, accountList.get(0).getPassword(), new ArrayList<>());

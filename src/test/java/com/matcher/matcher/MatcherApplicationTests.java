@@ -9,16 +9,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class MatcherApplicationTests {
 
 	OrderBook orderBook = new OrderBook();
-	Order falseOrder = new Order("Wallace", 200, -10, "buy");
-	Order order1 = new Order("Wallace", 100, 10, "buy");
-	Order order2 = new Order("Gromit", 100, 10, "sell");
-	Order order3 = new Order("Gromit",200,10, "sell");
-	Order order4 = new Order("Wallace", 200, 10,"buy");
-	Order order5 = new Order("Wallace", 300, 10, "buy");
-	Order order6 = new Order("Wallace", 300, 50, "buy");
-	Order order7 = new Order("Gromit", 400, 5, "sell");
-	Order order8 = new Order("Gromit", 300, 50, "sell");
-	Order order9 = new Order("Wallace", 400, 5, "buy");
+	CCOrder falseOrder = new CCOrder(System.nanoTime(),"Wallace", 200, -10, "buy");
+	CCOrder order1 = new CCOrder(System.nanoTime(),"Wallace", 100, 10, "buy");
+	CCOrder order2 = new CCOrder(System.nanoTime(),"Gromit", 100, 10, "sell");
+	CCOrder order3 = new CCOrder(System.nanoTime(),"Gromit",200,10, "sell");
+	CCOrder order4 = new CCOrder(System.nanoTime(),"Wallace", 200, 10,"buy");
+	CCOrder order5 = new CCOrder(System.nanoTime(),"Wallace", 300, 10, "buy");
+	CCOrder order6 = new CCOrder(System.nanoTime(),"Wallace", 300, 50, "buy");
+	CCOrder order7 = new CCOrder(System.nanoTime(),"Gromit", 400, 5, "sell");
+	CCOrder order8 = new CCOrder(System.nanoTime(),"Gromit", 300, 50, "sell");
+	CCOrder order9 = new CCOrder(System.nanoTime(),"Wallace", 400, 5, "buy");
 	@Test
 	void contextLoads() {
 	}

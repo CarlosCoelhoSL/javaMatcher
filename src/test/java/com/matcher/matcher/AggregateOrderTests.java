@@ -9,10 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class AggregateOrderTests {
     OrderBook orderBook = new OrderBook();
 
-    Order order1 = new Order("Wallace", 100, 10, "buy");
-    Order order2 = new Order("Gromit", 100, 10, "sell");
-    Order order3 = new Order("Gromit", 100, 20, "sell");
-    Order order4 = new Order("Gromit", 100, 30, "sell");
+    CCOrder order1 = new CCOrder(System.nanoTime(),"Wallace", 100, 10, "buy");
+    CCOrder order2 = new CCOrder(System.nanoTime(),"Gromit", 100, 10, "sell");
+    CCOrder order3 = new CCOrder(System.nanoTime(),"Gromit", 100, 20, "sell");
+    CCOrder order4 = new CCOrder(System.nanoTime(),"Gromit", 100, 30, "sell");
 
     @Test
     void checkBuyAggOrders() {

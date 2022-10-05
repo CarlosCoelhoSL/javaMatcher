@@ -28,10 +28,10 @@ class ValidationTests {
     }
     @Autowired
     private MockMvc mockMvc;
-    Order falseOrder = new Order("", 200, 10, "buy");
-    Order order1 = new Order("Wallace", 100, 10, "buy");
-    Order largeAccount = new Order("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 200, 10, "buy");
-    Order badAction = new Order("Wallace", 100, 10, "give");
+    CCOrder falseOrder = new CCOrder(System.nanoTime(),"", 200, 10, "buy");
+    CCOrder order1 = new CCOrder(System.nanoTime(),"Wallace", 100, 10, "buy");
+    CCOrder largeAccount = new CCOrder(System.nanoTime(),"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 200, 10, "buy");
+    CCOrder badAction = new CCOrder(System.nanoTime(),"Wallace", 100, 10, "give");
 
     @Test
     void checkEmptyAccount() throws Exception{

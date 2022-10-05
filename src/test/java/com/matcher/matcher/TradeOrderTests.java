@@ -9,8 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TradeOrderTests {
 
     OrderBook orderBook = new OrderBook();
-    Order order1 = new Order("Wallace", 100, 10, "buy");
-    Order order2 = new Order("Gromit", 100, 10, "sell");
+    CCOrder order1 = new CCOrder(System.nanoTime(),"Wallace", 100, 10, "buy");
+    CCOrder order2 = new CCOrder(System.nanoTime(),"Gromit", 100, 10, "sell");
 
     @Test
     void checkBasicTrade() {

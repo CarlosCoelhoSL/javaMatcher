@@ -1,56 +1,52 @@
 package com.matcher.matcher;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Locale;
+import java.util.*;
 
 @Component
 public class OrderBook {
-    ArrayList<Order> orders;
+    ArrayList<CCOrder> orders;
     ArrayList<AggregateOrder> aggregateOrders;
     ArrayList<TradeOrder> tradeOrders;
+    @Autowired
+    private CCOrderRepository ccOrderRepository;
+    @Autowired
+    private aggregateOrderRepository aggregateOrderRepository;
+    @Autowired
+    private tradeOrderRepository tradeOrderRepository;
 
-    public OrderBook() {
-        this.orders = new ArrayList<Order>();
-        this.aggregateOrders = new ArrayList<AggregateOrder>();
-        this.tradeOrders = new ArrayList<TradeOrder>();
-    }
 
-    private void addOrder(@Valid Order order) {
+    public void addOrder(@Valid CCOrder order) {
         if (order.getPrice() > 0 && order.getQuantity() > 0 &&
                 (order.getAction().equals("buy") || order.getAction().equals("sell"))) {
-                    this.orders.add(order);
+                    ccOrderRepository.save(order);
         }
-        Collections.sort(this.orders);
     }
 
 
-    private void trade(Order oldOrder,Order newOrder){
+    private void trade(CCOrder oldOrder, CCOrder newOrder){
         System.out.println("hi from trade");
         int tradeQuantity = Math.min(oldOrder.getQuantity(), newOrder.getQuantity());
         int tradePrice = Math.min(oldOrder.getPrice(), newOrder.getPrice());
-        Order amendedOrder;
-        int oldOrderLoc = this.orders.indexOf(oldOrder);
+        CCOrder amendedOrder;
         if (oldOrder.getQuantity()==newOrder.getQuantity()) {
-            this.orders.remove(oldOrder);
+            ccOrderRepository.delete(oldOrder);
         } else if (tradeQuantity== oldOrder.getQuantity()) {
             amendedOrder = newOrder;
             amendedOrder.setQuantity(amendedOrder.getQuantity()-tradeQuantity);
-            this.orders.remove(oldOrder);
+            ccOrderRepository.delete(oldOrder);
             this.match(amendedOrder);
         } else {
-            this.orders.get(oldOrderLoc).setQuantity(oldOrder.getQuantity() - tradeQuantity);
+            Optional<CCOrder> order = ccOrderRepository.findById(oldOrder.getId());
+            order.get().setQuantity(order.get().getQuantity() - tradeQuantity);
         }
         //Add trade order to trades array
         String buyer;
         String seller;
-        System.out.println("Buyer: "+newOrder.getAccount());
-        System.out.println("Seller: "+oldOrder.getAccount());
         if (oldOrder.getAction().equals("buy")) {
             buyer = oldOrder.getAccount();
             seller = newOrder.getAccount();
@@ -58,16 +54,15 @@ public class OrderBook {
             buyer = newOrder.getAccount();
             seller = oldOrder.getAccount();
         }
-        TradeOrder trade = new TradeOrder(tradeQuantity,tradePrice,buyer,seller);
-        this.tradeOrders.add(0, trade);
-
+        TradeOrder trade = new TradeOrder(System.nanoTime(),tradePrice,tradeQuantity,buyer,seller);
+        tradeOrderRepository.save(trade);
     }
 
 
-    public void match(@Valid Order newOrder) {
-        Collections.sort(this.orders);
+    public void match(@Valid CCOrder newOrder) {
+        ArrayList<CCOrder> orderList = ccOrderRepository.sortOrders();
         Boolean matchFound = false;
-        for (Order oldOrder : this.orders) {
+        for ( CCOrder oldOrder : ccOrderRepository.findByOrderByPriceDesc()){
             if (!matchFound) {
                 if (!(oldOrder.getAccount().equals(newOrder.getAccount()))) {
                     if (!(oldOrder.getAction().equals(newOrder.getAction()))) {
@@ -76,7 +71,7 @@ public class OrderBook {
                             System.out.println("trade found");
                             this.trade(oldOrder, newOrder);
                             matchFound = true;
-                            if (this.orders.size() == 0) {
+                            if (ccOrderRepository.findAll().size() == 0) {
                                 break;
                             }
                         }
@@ -85,26 +80,25 @@ public class OrderBook {
             }
         }
         if (!matchFound) {
-            this.addOrder(newOrder);
+            ccOrderRepository.save(newOrder);
         }
-        Collections.sort(this.orders);
-        this.aggregateOrders();
-        System.out.println(this.orders);
+        //this.aggregateOrders();
+        //System.out.println(aggregateOrderRepository.findAll());
     }
 
     public void aggregateOrders() {
-        this.aggregateOrders.clear();
-        for (Order order : this.orders) {
+        System.out.println("hi from aggregate order");
+        aggregateOrderRepository.deleteAll();
+        for (CCOrder order : ccOrderRepository.sortOrders()) {
             Boolean aggExists = false;
-            for (AggregateOrder aggOrder : this.aggregateOrders) {
+            for (AggregateOrder aggOrder : aggregateOrderRepository.findAll()) {
                 if ((order.getPrice()==aggOrder.getPrice())&&(order.getAction().equals(aggOrder.getAction()))){
-                    aggOrder.setQuantity(aggOrder.getQuantity()+order.getQuantity());
+                    Optional<AggregateOrder> orderToChange = aggregateOrderRepository.findById(aggOrder.getId());
+                    orderToChange.get().setQuantity(aggOrder.getQuantity()+order.getQuantity());
                     aggExists = true;
                 }
             }
-            if (!aggExists) {this.aggregateOrders.add(new AggregateOrder(order.getQuantity(),order.getPrice(),order.getAction()));}
-            this.aggregateOrders.sort(Comparator.comparing(AggregateOrder::getPrice));
-            Collections.reverse(this.aggregateOrders);
+            if (!aggExists) {aggregateOrderRepository.save((new AggregateOrder(System.nanoTime(),order.getPrice(),order.getQuantity(),order.getAction())));}
         }
     }
 }
